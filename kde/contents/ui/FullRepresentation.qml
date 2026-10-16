@@ -16,6 +16,7 @@ PlasmaExtras.Representation {
     property bool errorsExpanded: false
 
     signal refreshRequested()
+    signal agentActivated(var row)
 
     function errorSummary() {
         const machines = errors.filter(e => e.kind === "machine").length;
@@ -169,6 +170,7 @@ PlasmaExtras.Representation {
                 delegate: AgentDelegate {
                     width: ListView.view.width
                     grouped: full.grouped
+                    onActivated: full.agentActivated(modelData)
                 }
 
                 PlasmaExtras.PlaceholderMessage {

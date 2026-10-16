@@ -12,13 +12,23 @@ Item {
     required property var modelData
     property bool grouped: false
 
+    signal activated()
+
     implicitHeight: layout.implicitHeight + Kirigami.Units.smallSpacing * 2
 
     Rectangle {
         anchors.fill: parent
         radius: Kirigami.Units.cornerRadius
         color: Kirigami.Theme.highlightColor
-        opacity: delegate.modelData.focused ? 0.15 : 0
+        opacity: mouse.containsMouse ? (mouse.pressed ? 0.35 : 0.25) : delegate.modelData.focused ? 0.15 : 0
+    }
+
+    MouseArea {
+        id: mouse
+        anchors.fill: parent
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
+        onClicked: delegate.activated()
     }
 
     RowLayout {
@@ -63,10 +73,8 @@ Item {
     }
 
     PlasmaComponents.ToolTip.text: modelData.cwd
-    PlasmaComponents.ToolTip.visible: hover.hovered && modelData.cwd !== ""
+    PlasmaComponents.ToolTip.visible: mouse.containsMouse && modelData.cwd !== ""
     PlasmaComponents.ToolTip.delay: Kirigami.Units.toolTipDelay
-
-    HoverHandler { id: hover }
 
     function htmlEscape(s) {
         return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");

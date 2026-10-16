@@ -10,6 +10,7 @@ PlasmoidItem {
     id: root
 
     readonly property string scriptPath: Qt.resolvedUrl("../code/herdr-snapshot.sh").toString().replace(/^file:\/\//, "")
+    readonly property string raisePath: Qt.resolvedUrl("../code/raise.sh").toString().replace(/^file:\/\//, "")
 
     // [{key, kind: "local"|"machine", label, target}]
     property var sources: []
@@ -83,6 +84,7 @@ PlasmoidItem {
         errors: root.sourceErrors
         globalError: root.globalError
         onRefreshRequested: root.refreshSources()
+        onAgentActivated: row => root.focusAgent(row)
     }
 
     function shellQuote(s) {
@@ -90,7 +92,11 @@ PlasmoidItem {
     }
 
     function run(args, callback) {
-        const cmd = ["sh", scriptPath].concat(args, [Plasmoid.configuration.herdrPath]).map(shellQuote).join(" ");
+        exec([scriptPath].concat(args, [Plasmoid.configuration.herdrPath]), callback);
+    }
+
+    function exec(args, callback) {
+        const cmd = ["sh"].concat(args).map(shellQuote).join(" ");
         if (pending[cmd]) {
             return; // previous poll of this source is still running
         }
@@ -192,6 +198,42 @@ PlasmoidItem {
         return sorted.sort((x, y) => groupRank[x.group] - groupRank[y.group] || newer(x, y));
     }
 
+    // Switch herdr to the agent, then bring the terminal the user last typed
+    // a herdr client into to the front (tab included for Yakuake/Konsole).
+    function focusAgent(row) {
+        delete finished[row.key];
+        root.expanded = false;
+        run(["focus", row.kind, row.target, row.paneId], result => {
+            if (result.client_pid) exec([raisePath, String(result.client_pid)], () => {});
+            poll(row.kind);
+        });
+    }
+
+    // "Just finished": herdr's API mostly reports finished agents as idle once
+    // any client has seen them, so track working -> idle ourselves and show it
+    // as done until the agent is focused or starts working again.
+    property var lastStatus: ({})
+    property var lastCompletion: ({})
+    property var lastFocused: ({})
+    property var finished: ({})
+
+    function displayStatus(key, a) {
+        const status = a.agent_status || "unknown";
+        const completion = a.completion_seq || 0;
+        const prev = lastStatus[key];
+        if (status === "working" || status === "blocked") {
+            delete finished[key];
+        } else if (prev === "working" || prev === "blocked"
+                   || (prev !== undefined && completion > (lastCompletion[key] || 0))) {
+            finished[key] = true;
+        }
+        if (a.focused && lastFocused[key] === false) delete finished[key];
+        lastStatus[key] = status;
+        lastCompletion[key] = completion;
+        lastFocused[key] = !!a.focused;
+        return finished[key] && status !== "blocked" ? "done" : status;
+    }
+
     function rebuild() {
         const rows = [];
         const errors = [];
@@ -208,7 +250,8 @@ PlasmoidItem {
             // Keep herdr's own order: agent list already matches its sidebar.
             const srcRows = res.agents.map(a => {
                 const w = ws[a.workspace_id] || {};
-                const status = a.agent_status || "unknown";
+                const key = src.key + "/" + a.pane_id;
+                const status = displayStatus(key, a);
                 c[status in c ? status : "unknown"] += 1;
                 c.total += 1;
                 return {
@@ -220,8 +263,11 @@ PlasmoidItem {
                     status: status,
                     cwd: a.foreground_cwd || a.cwd || "",
                     focused: !!a.focused,
+                    key: key,
+                    kind: src.kind,
+                    target: src.target,
                     paneId: a.pane_id,
-                    changedAt: noteChange(src.key + "/" + a.pane_id, a.state_change_seq || 0),
+                    changedAt: noteChange(key, a.state_change_seq || 0),
                     changeSeq: a.state_change_seq || 0,
                 };
             });

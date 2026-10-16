@@ -4,12 +4,21 @@
 #   herdr-snapshot.sh sources [herdr-bin]           -> {"sessions":[...],"machines":[...]}
 #   herdr-snapshot.sh local <socket> [herdr-bin]    -> {"agents":{...},"workspaces":{...}}
 #   herdr-snapshot.sh machine <id> [herdr-bin]      -> {"agents":{...},"workspaces":{...}}
+#   herdr-snapshot.sh focus local|machine <socket-or-id> <pane> [herdr-bin]
+#                                                    -> {"focused":true,"client_pid":N|null}
 #
 # Failures print {"error":"..."} so the widget can show them per source.
 
 mode="${1:-}"
-target="${2:-}"
-herdr_bin="${3:-}"
+if [ "$mode" = "focus" ]; then
+    kind="${2:-}"
+    target="${3:-}"
+    pane="${4:-}"
+    herdr_bin="${5:-}"
+else
+    target="${2:-}"
+    herdr_bin="${3:-}"
+fi
 
 json_error() {
     msg=$(printf '%s' "$1" | tr '\n\t' '  ' | sed 's/\\/\\\\/g; s/"/\\"/g')
@@ -58,6 +67,32 @@ case "$mode" in
             \[*) printf '{"machine_status":%s}\n' "$machine_status" ;;
             *) json_error "${workspaces:-$agents}" ;;
         esac
+        ;;
+    focus)
+        [ -n "$target" ] && [ -n "$pane" ] || json_error "usage: focus local|machine <target> <pane>"
+        case "$kind" in
+            local) out=$(HERDR_SOCKET_PATH="$target" timeout 5 "$herdr_bin" agent focus "$pane" 2>&1) || json_error "$out" ;;
+            machine) out=$(timeout 15 "$herdr_bin" --machine "$target" agent focus "$pane" 2>&1 </dev/null) || json_error "$out" ;;
+            *) json_error "unknown source kind: $kind" ;;
+        esac
+        # The herdr TUI client the user typed into most recently: its terminal's
+        # atime moves on every keypress. Desktop frontends raise its window.
+        best_pid=null
+        best_time=0
+        for pid in $(pgrep -x herdr); do
+            args=$(tr '\0' ' ' < "/proc/$pid/cmdline" 2>/dev/null) || continue
+            case " $args" in
+                *" server"*|*" agent "*|*" plugin "*|*" api "*|*" pane "*|*" workspace "*|*" machine "*|*" session "*) continue ;;
+            esac
+            tty=$(readlink "/proc/$pid/fd/0" 2>/dev/null) || continue
+            case "$tty" in /dev/pts/*|/dev/tty*) ;; *) continue ;; esac
+            t=$(stat -c %X "$tty" 2>/dev/null) || continue
+            if [ "$t" -gt "$best_time" ]; then
+                best_time=$t
+                best_pid=$pid
+            fi
+        done
+        printf '{"focused":true,"client_pid":%s}\n' "$best_pid"
         ;;
     *)
         json_error "usage: herdr-snapshot.sh sources|local <socket>|machine <id> [herdr-bin]"

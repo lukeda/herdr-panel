@@ -18,11 +18,11 @@ Herdr's sidebar tells you what every agent is doing, but only while you're looki
 
 ### 🟠 One dot for everything
 
-The panel icon carries a single dot for the most urgent state across all your agents: **blocked** (red) → **working** (orange, pulsing) → **done** (blue) → **idle** (green ring). Next to it, `3/9` counts the active agents out of the total. Hover for the breakdown: `2 working · 1 blocked · 0 done · 6 idle`.
+The panel icon carries a single dot for the most urgent state across all your agents: **blocked** (red) → **working** (orange, pulsing) → **done** (blue, just finished and not looked at yet) → **idle** (green ring). An agent stays done until you focus it or it starts working again. Next to it, `3/9` counts the active agents out of the total. Hover for the breakdown: `2 working · 1 blocked · 0 done · 6 idle`.
 
 ### 📋 The sidebar, one click away
 
-Click the icon for every agent, laid out like Herdr's own sidebar: `Local · workspace · title`, with the agent and its status underneath. Toggle **grouped** to sort them under their session and workspace, and **default** / **recent** to keep herdr's sidebar order or put the latest status change first. The agent focused in Herdr is highlighted, and hovering a row shows its folder.
+Click the icon for every agent, laid out like Herdr's own sidebar: `Local · workspace · title`, with the agent and its status underneath. Toggle **grouped** to sort them under their session and workspace, and **default** / **recent** to keep herdr's sidebar order or put the latest status change first. Click an agent to jump to it in herdr. The agent focused in Herdr is highlighted, and hovering a row shows its folder.
 
 ### 🛰️ Every session, every machine
 
@@ -87,9 +87,9 @@ The widget runs [`herdr-snapshot.sh`](core/herdr-snapshot.sh), which calls the H
 
 Every interval can be changed in the widget's settings (right-click → **Configure Herdr Panel…**), and you can turn SSH machines off there.
 
-### Can I click an agent to jump to it?
+### What happens when I click an agent?
 
-Not yet. The widget only displays agents. Herdr could be running in any terminal, or on another machine, so jumping to an agent needs more thought than focusing a pane.
+herdr switches to that agent (`herdr agent focus`), and the terminal you last typed into a herdr client in comes to the front. "Last typed into" is read from each client's terminal device, so with herdr open in several terminals you land in the one you were just using. Yakuake drops down and switches to the right tab, and Konsole switches to the right tab. Any other terminal has its window raised through KWin.
 
 ### Does it send anything anywhere?
 
