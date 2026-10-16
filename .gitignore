@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Animation render scratch (render.mjs writes frames to the system temp dir,
+# but keep stray local renders out too)
+assets/animation/frames/
+*.frames/
+
+# Qt / QML tooling
+.qmlls.ini
+*.qmlc
+*.jsc
+.rcc/
+
+# Editors and OS
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+
+# Logs
+*.log

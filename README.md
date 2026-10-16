@@ -104,6 +104,8 @@ herdr plugin uninstall herdr-panel
 
 ## Development
 
+Want to help? See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, layout, testing and our AI policy.
+
 ```
 core/herdr-snapshot.sh   shared: calls the herdr CLI, prints JSON
 kde/                     KDE Plasma 6 widget (QML); install.sh copies core/ into it
