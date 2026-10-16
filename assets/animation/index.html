@@ -1,0 +1,358 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>herdr-kde launch animation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;800&family=JetBrains+Mono:wght@400;600&display=block" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0e12;
+    --grid: rgba(255, 255, 255, 0.035);
+    --fg: #eff0f1;
+    --dim: #8b8f98;
+    --accent: #3daee9;
+    --surface: #1b1d23;
+    --surface-2: #232630;
+    --line: #2f3340;
+    --idle: #27ae60;
+    --working: #f67400;
+    --blocked: #da4453;
+    --done: #3daee9;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+    --sans: "Inter", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 720px; height: 720px; overflow: hidden; background: var(--bg); }
+  body {
+    font-family: var(--sans);
+    color: var(--fg);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 36px 36px;
+    position: relative;
+  }
+  .abs { position: absolute; }
+  .mono { font-family: var(--mono); }
+
+  #brand { left: 28px; top: 24px; font-weight: 800; font-size: 15px; letter-spacing: -0.01em; }
+  #version { right: 28px; top: 26px; font-size: 12px; color: var(--dim); }
+
+  .headline { font-weight: 800; letter-spacing: -0.045em; line-height: 0.98; }
+  .headline .accent { color: var(--accent); }
+
+  #intro { left: 0; right: 0; top: 0; bottom: 0; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 84px; }
+  #head { left: 40px; top: 64px; font-size: 54px; }
+
+  /* KDE-style panel */
+  #panel {
+    left: 0; right: 0; bottom: 0; height: 48px;
+    background: rgba(27, 29, 35, 0.96);
+    border-top: 1px solid var(--line);
+    display: flex; align-items: center; padding: 0 14px; gap: 10px;
+  }
+  .launcher { width: 30px; height: 30px; border-radius: 8px; background: linear-gradient(135deg, #3daee9, #1d6fa5); }
+  .task { width: 30px; height: 30px; border-radius: 7px; background: var(--surface-2); border: 1px solid var(--line); }
+  .task.active { border-bottom: 2px solid var(--accent); }
+  .spacer { flex: 1; }
+  .tray { width: 16px; height: 16px; border-radius: 4px; background: #3a3e4a; }
+  #clock { font-size: 13px; font-weight: 600; color: var(--fg); margin-left: 6px; }
+  #widget {
+    display: flex; align-items: center; gap: 7px; height: 36px; padding: 0 9px;
+    border-radius: 7px;
+  }
+  #widget.hover { background: rgba(61, 174, 233, 0.18); }
+  .term-icon {
+    width: 26px; height: 26px; border-radius: 6px; position: relative;
+    background: linear-gradient(160deg, #8c9497, #5f6669);
+  }
+  .term-icon::before {
+    content: ""; position: absolute; left: 7px; top: 8px; width: 7px; height: 7px;
+    border-right: 2.5px solid #f2f2f2; border-bottom: 2.5px solid #f2f2f2; transform: rotate(-45deg);
+  }
+  #widget-dot { position: absolute; right: -3px; bottom: -3px; width: 12px; height: 12px; }
+  #widget-count { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  .dot { border-radius: 50%; border: 2px solid; flex: none; }
+
+  /* Magnified panel widget for the panel scene */
+  #zoom { left: 0; right: 0; top: 215px; display: flex; flex-direction: column; align-items: center; gap: 26px; }
+  #zoom .card {
+    display: flex; align-items: center; gap: 26px; padding: 26px 40px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 18px;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+  }
+  #zoom .term-icon { width: 92px; height: 92px; border-radius: 18px; }
+  #zoom .term-icon::before { left: 24px; top: 29px; width: 24px; height: 24px; border-width: 0 8px 8px 0; }
+  #zoom-dot { position: absolute; right: -10px; bottom: -10px; width: 38px; height: 38px; border-width: 5px; box-shadow: 0 0 0 5px var(--surface); }
+  #zoom-count { font-size: 76px; font-weight: 800; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
+  #zoom-count .of { color: var(--dim); }
+  #legend { display: flex; gap: 22px; font-size: 13px; color: var(--dim); }
+  #legend span { display: flex; align-items: center; gap: 8px; padding: 5px 10px; border-radius: 6px; }
+  #legend span.on { color: var(--fg); background: var(--surface-2); }
+  #legend .dot { width: 11px; height: 11px; }
+
+  /* Plasma tooltip */
+  #tooltip {
+    right: 70px; bottom: 60px; width: 290px; padding: 12px 14px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 9px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  }
+  #tooltip .t1 { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+  #tooltip .t2 { font-size: 12.5px; color: var(--dim); }
+
+  /* Popup (FullRepresentation) */
+  #popup {
+    right: 18px; bottom: 58px; width: 452px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+    overflow: hidden; transform-origin: 85% 100%;
+  }
+  #popup-head {
+    display: flex; align-items: center; height: 42px; padding: 0 12px 0 14px;
+    border-bottom: 1px solid var(--line); background: var(--surface-2);
+  }
+  #popup-head .title { flex: 1; font-size: 17px; font-weight: 600; }
+  #popup-head .toggle { font-size: 12px; color: var(--dim); padding: 3px 8px; border-radius: 5px; }
+  #popup-head .toggle.on { color: var(--fg); background: rgba(61, 174, 233, 0.25); }
+  #popup-head .refresh { width: 14px; height: 14px; margin-left: 10px; border: 2px solid var(--dim); border-radius: 50%; border-right-color: transparent; }
+  #rows { padding: 4px 0 6px; }
+  .section { font-size: 11.5px; font-weight: 600; color: var(--dim); padding: 7px 14px 3px; border-bottom: 1px solid var(--line); margin: 0 8px 2px; padding-left: 4px; }
+  .row { display: flex; gap: 11px; padding: 5px 14px; align-items: flex-start; }
+  .row.focused { background: rgba(61, 174, 233, 0.12); }
+  .row .dot { width: 10px; height: 10px; margin-top: 4px; }
+  .row .l1 { font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 380px; }
+  .row .l1 b { font-weight: 600; }
+  .row .l2 { font-size: 11.5px; color: var(--dim); margin-top: 1px; }
+  .row .l2 .st { transition: none; }
+
+  /* End card */
+  #end { left: 40px; right: 40px; top: 0; bottom: 0; display: flex; flex-direction: column; justify-content: center; }
+  #end .kicker { font-size: 12px; letter-spacing: 0.22em; color: var(--accent); display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+  #end .kicker::before { content: ""; width: 44px; height: 1px; background: var(--accent); }
+  #end .big { font-size: 112px; }
+  #end .cmd {
+    margin-top: 34px; font-size: 15px; padding: 14px 16px; border: 1px solid var(--line);
+    border-radius: 8px; background: var(--surface); display: inline-block; align-self: flex-start;
+  }
+  #end .cmd .p { color: var(--accent); }
+  #end .facts { margin-top: 16px; font-size: 12.5px; color: var(--dim); }
+  #caret { display: inline-block; width: 8px; height: 17px; background: var(--fg); vertical-align: -3px; margin-left: 2px; }
+</style>
+</head>
+<body>
+  <div id="brand" class="abs">herdr-kde</div>
+  <div id="version" class="abs mono">v0.1.0</div>
+
+  <div id="intro" class="abs headline"><div>Your agents,<br><span class="accent">in your panel.</span></div></div>
+  <div id="head" class="abs headline"></div>
+
+  <div id="zoom" class="abs">
+    <div class="card">
+      <div class="term-icon"><div id="zoom-dot" class="dot abs"></div></div>
+      <div id="zoom-count"></div>
+    </div>
+    <div id="legend" class="mono">
+      <span data-s="idle"><i class="dot"></i>idle</span>
+      <span data-s="working"><i class="dot"></i>working</span>
+      <span data-s="blocked"><i class="dot"></i>blocked</span>
+      <span data-s="done"><i class="dot"></i>done</span>
+    </div>
+  </div>
+
+  <div id="popup" class="abs">
+    <div id="popup-head">
+      <div class="title">agents</div>
+      <div class="toggle" id="toggle">flat</div>
+      <div class="refresh"></div>
+    </div>
+    <div id="rows"></div>
+  </div>
+
+  <div id="tooltip" class="abs">
+    <div class="t1">Herdr agents</div>
+    <div class="t2" id="tooltip-text"></div>
+  </div>
+
+  <div id="panel" class="abs">
+    <div class="launcher"></div>
+    <div class="task active"></div>
+    <div class="task"></div>
+    <div class="task"></div>
+    <div class="spacer"></div>
+    <div id="widget">
+      <div class="term-icon"><div id="widget-dot" class="dot abs"></div></div>
+      <div id="widget-count"></div>
+    </div>
+    <div class="tray"></div>
+    <div class="tray"></div>
+    <div class="tray"></div>
+    <div id="clock" class="mono">09:41</div>
+  </div>
+
+  <div id="end" class="abs">
+    <div class="kicker mono">HERDR AGENTS FOR KDE PLASMA</div>
+    <div class="big headline">herdr-<br><span class="accent">kde.</span></div>
+    <div class="cmd mono"><span class="p">$</span> <span id="typed"></span><span id="caret"></span></div>
+    <div class="facts mono">free · MIT · Plasma 6 · local + SSH machines</div>
+  </div>
+
+<script>
+  // Everything is a pure function of t (seconds) so render.mjs can step frames
+  // deterministically. Scene boundaries:
+  const S = { intro: [0, 2.4], panel: [2.4, 6.4], popup: [6.4, 10.2], grouped: [10.2, 13], end: [13, 16.5] };
+  const DURATION = 16.5;
+
+  const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+  const ease = x => { x = clamp(x); return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+  const prog = (t, a, b) => ease((t - a) / (b - a));
+  // 0→1 fading in over `f` seconds after a, 1→0 over `f` seconds before b.
+  const window_ = (t, [a, b], f = 0.35) => Math.min(prog(t, a, a + f), 1 - prog(t, b - f, b));
+
+  const AGENTS = [
+    { src: "Local",   ws: "api",     title: "Add rate limiting to public routes", agent: "claude" },
+    { src: "Local",   ws: "api",     title: "Write API changelog",                agent: "opencode" },
+    { src: "Local",   ws: "web",     title: "Dark mode toggle",                   agent: "opencode" },
+    { src: "Local",   ws: "web",     title: "Fix hydration warning",              agent: "claude" },
+    { src: "Local",   ws: "mobile",  title: "iOS parity",                         agent: "codex" },
+    { src: "MacBook", ws: "billing", title: "Stripe webhook retries",             agent: "claude" },
+    { src: "MacBook", ws: "billing", title: "Refund flow tests",                  agent: "codex" },
+  ];
+
+  // [index, time, status] — the story the statuses tell.
+  const BLOCKED = 4;
+  const EVENTS = [
+    [0, 0, "working"],
+    [5, 0, "working"],
+    [2, 3.2, "working"],
+    [BLOCKED, 4.1, "blocked"],
+    [0, 7.4, "done"],
+    [BLOCKED, 8.4, "working"],
+    [3, 9.1, "working"],
+    [5, 11.2, "done"],
+  ];
+
+  function statuses(t) {
+    const s = AGENTS.map(() => "idle");
+    for (const [i, at, st] of EVENTS) if (t >= at) s[i] = st;
+    return s;
+  }
+
+  const COLORS = { idle: "var(--idle)", working: "var(--working)", blocked: "var(--blocked)", done: "var(--done)" };
+  function dotStyle(el, status, t) {
+    const c = COLORS[status];
+    el.style.borderColor = c;
+    el.style.background = status === "idle" ? "transparent" : c;
+    el.style.opacity = status === "working" ? 0.4 + 0.6 * (0.5 + 0.5 * Math.cos(t * Math.PI * 2 / 1.4)) : 1;
+  }
+
+  function counts(st) {
+    const c = { working: 0, blocked: 0, done: 0, idle: 0 };
+    st.forEach(s => c[s]++);
+    return c;
+  }
+
+  const $ = id => document.getElementById(id);
+  const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+
+  function renderRows(t, st, grouped) {
+    let html = "";
+    let lastGroup = "";
+    AGENTS.forEach((a, i) => {
+      const group = a.src + " · " + a.ws;
+      if (grouped && group !== lastGroup) html += `<div class="section">${esc(group)}</div>`;
+      lastGroup = group;
+      const l1 = grouped ? esc(a.title) : `${a.src} · <b>${esc(a.ws)}</b> · ${esc(a.title)}`;
+      html += `<div class="row${i === BLOCKED && st[BLOCKED] === "blocked" ? " focused" : ""}">
+        <div class="dot" data-i="${i}"></div>
+        <div><div class="l1">${l1}</div><div class="l2">${a.agent} · <span class="st">${st[i]}</span></div></div>
+      </div>`;
+    });
+    $("rows").innerHTML = html;
+    document.querySelectorAll("#rows .dot").forEach(el => dotStyle(el, st[+el.dataset.i], t));
+  }
+
+  window.DURATION = DURATION;
+  window.renderAt = function (t) {
+    const st = statuses(t);
+    const c = counts(st);
+    const total = AGENTS.length;
+
+    // Intro
+    const intro = window_(t, S.intro, 0.4);
+    $("intro").style.opacity = intro;
+    $("intro").style.transform = `translateY(${(1 - prog(t, 0, 0.6)) * 24}px)`;
+
+    // Scene headline
+    const heads = [
+      [S.panel, "Glance at your panel.", "See who needs you."],
+      [S.popup, "Click for details.", "Every agent, live."],
+      [S.grouped, "Every session.", "Every machine."],
+    ];
+    let headOpacity = 0;
+    for (const [range, a, b] of heads) {
+      const o = window_(t, range, 0.3);
+      if (o > 0) {
+        headOpacity = o;
+        $("head").innerHTML = `${a}<br><span class="accent">${b}</span>`;
+        $("head").style.transform = `translateY(${(1 - prog(t, range[0], range[0] + 0.45)) * 18}px)`;
+      }
+    }
+    $("head").style.opacity = headOpacity;
+
+    // Panel is visible from the panel scene through the grouped scene
+    const panelIn = Math.min(prog(t, S.panel[0] - 0.1, S.panel[0] + 0.5), 1 - prog(t, S.end[0] - 0.4, S.end[0]));
+    $("panel").style.opacity = panelIn;
+    $("panel").style.transform = `translateY(${(1 - panelIn) * 48}px)`;
+
+    const overall = c.blocked ? "blocked" : c.working ? "working" : c.done ? "done" : "idle";
+    dotStyle($("widget-dot"), overall, t);
+    $("widget-count").textContent = `${c.working + c.blocked}/${total}`;
+
+    const zoom = window_(t, [S.panel[0] + 0.3, S.panel[1]], 0.35);
+    $("zoom").style.opacity = zoom;
+    $("zoom").style.transform = `scale(${0.92 + 0.08 * zoom})`;
+    dotStyle($("zoom-dot"), overall, t);
+    $("zoom-count").innerHTML = `${c.working + c.blocked}<span class="of">/${total}</span>`;
+    document.querySelectorAll("#legend span").forEach(el => {
+      dotStyle(el.querySelector(".dot"), el.dataset.s, 0);
+      el.classList.toggle("on", el.dataset.s === overall);
+    });
+    $("widget").classList.toggle("hover", t > 4.6 && t < 7.2);
+
+    // Tooltip while hovering in the panel scene
+    const tip = window_(t, [4.8, 6.3], 0.25);
+    $("tooltip").style.opacity = tip;
+    $("tooltip").style.transform = `translateY(${(1 - tip) * 8}px)`;
+    $("tooltip-text").textContent = `${c.working} working · ${c.blocked} blocked · ${c.done} done · ${c.idle} idle`;
+
+    // Popup through the popup + grouped scenes
+    const pop = Math.min(prog(t, S.popup[0], S.popup[0] + 0.45), 1 - prog(t, S.end[0] - 0.5, S.end[0] - 0.1));
+    $("popup").style.opacity = pop;
+    $("popup").style.transform = `scale(${0.94 + 0.06 * pop}) translateY(${(1 - pop) * 14}px)`;
+    const grouped = t >= S.grouped[0] + 0.5;
+    $("toggle").textContent = grouped ? "grouped" : "flat";
+    $("toggle").classList.toggle("on", t >= S.grouped[0] + 0.2);
+    renderRows(t, st, grouped);
+
+    // End card with typed install command
+    const end = prog(t, S.end[0], S.end[0] + 0.5);
+    $("end").style.opacity = end;
+    $("end").style.transform = `translateY(${(1 - end) * 20}px)`;
+    const cmd = "herdr plugin install lukeda/herdr-kde";
+    const chars = Math.floor(clamp((t - S.end[0] - 0.7) / 1.6) * cmd.length);
+    $("typed").textContent = cmd.slice(0, chars);
+    $("caret").style.opacity = Math.floor(t * 2.2) % 2 === 0 || chars < cmd.length ? 1 : 0;
+
+  };
+
+  // Preview in a normal browser: loop in real time.
+  if (!location.search.includes("render")) {
+    const start = performance.now();
+    const tick = () => { window.renderAt(((performance.now() - start) / 1000) % DURATION); requestAnimationFrame(tick); };
+    document.fonts.ready.then(tick);
+  }
+</script>
+</body>
+</html>

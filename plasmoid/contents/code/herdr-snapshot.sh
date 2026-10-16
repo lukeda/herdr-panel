@@ -46,9 +46,18 @@ case "$mode" in
     machine)
         [ -n "$target" ] || json_error "missing machine id"
         # stdin from /dev/null so ssh can never sit waiting on a password prompt.
-        agents=$(timeout 15 "$herdr_bin" --machine "$target" agent list 2>&1 </dev/null) || json_error "$agents"
-        workspaces=$(timeout 15 "$herdr_bin" --machine "$target" workspace list 2>&1 </dev/null) || json_error "$workspaces"
-        printf '{"agents":%s,"workspaces":%s}\n' "$agents" "$workspaces"
+        if agents=$(timeout 15 "$herdr_bin" --machine "$target" agent list 2>&1 </dev/null) &&
+            workspaces=$(timeout 15 "$herdr_bin" --machine "$target" workspace list 2>&1 </dev/null); then
+            printf '{"agents":%s,"workspaces":%s}\n' "$agents" "$workspaces"
+            exit 0
+        fi
+        # The fetch error is a Rust debug dump; `machine status` has a readable
+        # reason. Only ask on failure since it is slow for unreachable hosts.
+        machine_status=$(timeout 15 "$herdr_bin" machine status "$target" --json 2>/dev/null </dev/null)
+        case "$machine_status" in
+            \[*) printf '{"machine_status":%s}\n' "$machine_status" ;;
+            *) json_error "${workspaces:-$agents}" ;;
+        esac
         ;;
     *)
         json_error "usage: herdr-snapshot.sh sources|local <socket>|machine <id> [herdr-bin]"

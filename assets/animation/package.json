@@ -1,0 +1,12 @@
+{
+  "name": "herdr-kde-animation",
+  "private": true,
+  "type": "module",
+  "description": "Renders assets/herdr-kde.webp and assets/herdr-kde.mp4 from index.html",
+  "scripts": {
+    "render": "node render.mjs"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.58.0"
+  }
+}

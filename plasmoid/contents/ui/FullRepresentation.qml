@@ -13,7 +13,18 @@ PlasmaExtras.Representation {
     property string globalError: ""
     readonly property bool grouped: Plasmoid.configuration.groupByWorkspace
 
+    property bool errorsExpanded: false
+
     signal refreshRequested()
+
+    function errorSummary() {
+        const machines = errors.filter(e => e.kind === "machine").length;
+        const sessions = errors.length - machines;
+        const parts = [];
+        if (machines > 0) parts.push(i18np("%1 machine couldn't connect", "%1 machines couldn't connect", machines));
+        if (sessions > 0) parts.push(i18np("%1 session couldn't be read", "%1 sessions couldn't be read", sessions));
+        return parts.join(" · ");
+    }
 
     Layout.minimumWidth: Kirigami.Units.gridUnit * 16
     Layout.preferredWidth: Kirigami.Units.gridUnit * 22
@@ -53,24 +64,79 @@ PlasmaExtras.Representation {
         }
     }
 
-    contentItem: ColumnLayout {
-        spacing: 0
+    footer: PlasmaExtras.PlasmoidHeading {
+        visible: full.errors.length > 0
+        position: PlasmaComponents.ToolBar.Footer
 
-        Repeater {
-            model: full.globalError !== "" ? [{ source: i18n("herdr"), error: full.globalError }] : full.errors
+        contentItem: ColumnLayout {
+            spacing: Kirigami.Units.smallSpacing
 
-            PlasmaComponents.Label {
-                required property var modelData
+            PlasmaComponents.ToolButton {
                 Layout.fillWidth: true
-                Layout.margins: Kirigami.Units.smallSpacing
-                text: modelData.source + ": " + modelData.error
-                color: Kirigami.Theme.negativeTextColor
+                text: full.errorSummary()
                 font: Kirigami.Theme.smallFont
-                wrapMode: Text.Wrap
-                maximumLineCount: 3
-                elide: Text.ElideRight
+                onClicked: full.errorsExpanded = !full.errorsExpanded
+                contentItem: RowLayout {
+                    spacing: Kirigami.Units.smallSpacing
+                    Kirigami.Icon {
+                        source: "data-warning"
+                        Layout.preferredWidth: Kirigami.Units.iconSizes.small
+                        Layout.preferredHeight: Kirigami.Units.iconSizes.small
+                    }
+                    PlasmaComponents.Label {
+                        Layout.fillWidth: true
+                        text: full.errorSummary()
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.8
+                        elide: Text.ElideRight
+                    }
+                    Kirigami.Icon {
+                        source: full.errorsExpanded ? "arrow-down" : "arrow-up"
+                        Layout.preferredWidth: Kirigami.Units.iconSizes.small
+                        Layout.preferredHeight: Kirigami.Units.iconSizes.small
+                        opacity: 0.6
+                    }
+                }
+            }
+
+            Repeater {
+                model: full.errorsExpanded ? full.errors : []
+
+                ColumnLayout {
+                    required property var modelData
+                    Layout.fillWidth: true
+                    Layout.leftMargin: Kirigami.Units.largeSpacing
+                    Layout.rightMargin: Kirigami.Units.largeSpacing
+                    Layout.bottomMargin: Kirigami.Units.smallSpacing
+                    spacing: 0
+
+                    RowLayout {
+                        spacing: Kirigami.Units.smallSpacing
+                        StatusDot { status: "blocked" }
+                        PlasmaComponents.Label {
+                            Layout.fillWidth: true
+                            text: modelData.source + " · " + (modelData.status || "error")
+                            font.bold: true
+                            font.pointSize: Kirigami.Theme.smallFont.pointSize
+                            elide: Text.ElideRight
+                        }
+                    }
+                    PlasmaComponents.Label {
+                        Layout.fillWidth: true
+                        text: modelData.error
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.7
+                        wrapMode: Text.Wrap
+                        maximumLineCount: 4
+                        elide: Text.ElideRight
+                    }
+                }
             }
         }
+    }
+
+    contentItem: ColumnLayout {
+        spacing: 0
 
         PlasmaComponents.ScrollView {
             Layout.fillWidth: true
@@ -98,9 +164,10 @@ PlasmaExtras.Representation {
                 PlasmaExtras.PlaceholderMessage {
                     anchors.centerIn: parent
                     width: parent.width - Kirigami.Units.gridUnit * 4
-                    visible: list.count === 0 && full.globalError === ""
-                    iconName: "utilities-terminal"
-                    text: i18n("No agents running")
+                    visible: list.count === 0
+                    iconName: full.globalError !== "" ? "dialog-warning" : "utilities-terminal"
+                    text: full.globalError !== "" ? i18n("Can't reach herdr") : i18n("No agents running")
+                    explanation: full.globalError
                 }
             }
         }

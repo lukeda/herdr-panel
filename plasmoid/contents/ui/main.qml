@@ -146,8 +146,19 @@ PlasmoidItem {
         }
     }
 
+    // herdr's connection failures are Rust debug dumps; keep the inner message.
+    function cleanError(text) {
+        const s = String(text).trim();
+        const inner = s.match(/error: "((?:[^"\\]|\\.)*)"/);
+        return inner ? inner[1].replace(/\\"/g, '"') : s.replace(/^Error:\s*/, "");
+    }
+
     function parseSnapshot(result) {
-        if (result.error) return { error: result.error };
+        if (result.machine_status) {
+            const m = result.machine_status[0] || {};
+            return { error: cleanError(m.error || m.status || i18n("unreachable")), status: m.status || "error" };
+        }
+        if (result.error) return { error: cleanError(result.error), status: "error" };
         const agents = result.agents && result.agents.result && result.agents.result.agents;
         if (!agents) {
             const err = result.agents && result.agents.error;
@@ -165,7 +176,7 @@ PlasmoidItem {
             const res = results[src.key];
             if (!res) continue;
             if (res.error) {
-                errors.push({ source: src.label, error: res.error });
+                errors.push({ source: src.label, kind: src.kind, status: res.status, error: res.error });
                 continue;
             }
             const ws = {};
