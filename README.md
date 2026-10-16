@@ -43,7 +43,7 @@ Every frontend shares the same data script, [`core/herdr-snapshot.sh`](core/herd
 <table>
 <tr>
 <td align="center" valign="top" width="50%"><h3>1️⃣</h3><b>Install the plugin</b><br /><sub>Run <code>herdr plugin install lukeda/herdr-panel</code>. Its build step finds your desktop and installs the matching widget for your user.</sub></td>
-<td align="center" valign="top" width="50%"><h3>2️⃣</h3><b>Add it to a panel</b><br /><sub>Right-click your panel → <b>Add Widgets…</b> → search for <b>Herdr Agents</b> and drag it onto the panel.</sub></td>
+<td align="center" valign="top" width="50%"><h3>2️⃣</h3><b>Add it to a panel</b><br /><sub>Right-click your panel → <b>Add Widgets…</b> → search for <b>Herdr Panel</b> and drag it onto the panel.</sub></td>
 </tr>
 </table>
 
@@ -85,7 +85,7 @@ The widget runs [`herdr-snapshot.sh`](core/herdr-snapshot.sh), which calls the H
 | SSH machines | `herdr --machine <id> agent list` and `workspace list` | 20s |
 | Why a machine failed | `herdr machine status <id> --json` | only after a failure |
 
-Every interval can be changed in the widget's settings (right-click → **Configure Herdr Agents…**), and you can turn SSH machines off there.
+Every interval can be changed in the widget's settings (right-click → **Configure Herdr Panel…**), and you can turn SSH machines off there.
 
 ### Can I click an agent to jump to it?
 

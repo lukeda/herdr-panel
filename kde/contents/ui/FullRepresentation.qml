@@ -41,7 +41,7 @@ PlasmaExtras.Representation {
                 Layout.fillWidth: true
                 Layout.leftMargin: Kirigami.Units.smallSpacing
                 level: 1
-                text: i18n("agents")
+                text: i18n("herdr panel")
             }
 
             PlasmaComponents.ToolButton {

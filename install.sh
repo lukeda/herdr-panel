@@ -36,7 +36,7 @@ kde() {
         say "  kquitapp6 plasmashell && systemctl --user start plasma-plasmashell"
     else
         kpackagetool6 --type Plasma/Applet --install "$stage"
-        say "KDE widget installed. Right-click your panel → Add Widgets… → \"Herdr Agents\"."
+        say "KDE widget installed. Right-click your panel → Add Widgets… → \"Herdr Panel\"."
     fi
 }
 

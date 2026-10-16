@@ -11,7 +11,7 @@
         "Icon": "utilities-terminal",
         "Id": "io.github.lukeda.herdr",
         "License": "MIT",
-        "Name": "Herdr Agents",
+        "Name": "Herdr Panel",
         "Version": "0.1.0",
         "Website": "https://github.com/lukeda/herdr-panel"
     },

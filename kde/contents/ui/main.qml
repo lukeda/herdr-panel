@@ -28,7 +28,7 @@ PlasmoidItem {
         : counts.done > 0 ? "done"
         : counts.idle > 0 ? "idle" : "unknown"
 
-    toolTipMainText: i18n("Herdr agents")
+    toolTipMainText: i18n("Herdr Panel")
     toolTipSubText: globalError !== "" ? globalError
         : counts.total === 0 ? i18n("No agents running")
         : i18n("%1 working · %2 blocked · %3 done · %4 idle",
