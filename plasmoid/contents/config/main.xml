@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0 http://www.kde.org/standards/kcfg/1.0/kcfg.xsd">
+  <kcfgfile name=""/>
+  <group name="General">
+    <entry name="herdrPath" type="String">
+      <label>Path to the herdr binary; empty means look it up automatically</label>
+      <default></default>
+    </entry>
+    <entry name="localInterval" type="Int">
+      <label>Seconds between polls of local herdr sessions</label>
+      <default>2</default>
+    </entry>
+    <entry name="remoteInterval" type="Int">
+      <label>Seconds between polls of saved SSH machines</label>
+      <default>20</default>
+    </entry>
+    <entry name="showRemote" type="Bool">
+      <label>Include agents on saved SSH machines</label>
+      <default>true</default>
+    </entry>
+    <entry name="groupByWorkspace" type="Bool">
+      <label>Group the agent list by workspace</label>
+      <default>false</default>
+    </entry>
+    <entry name="showCountsInPanel" type="Bool">
+      <label>Show active/total agent counts next to the panel icon</label>
+      <default>true</default>
+    </entry>
+  </group>
+</kcfg>

@@ -1,0 +1,19 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "lukeda"
+            }
+        ],
+        "Category": "System Information",
+        "Description": "Shows your herdr agents and their status in a Plasma panel",
+        "Icon": "utilities-terminal",
+        "Id": "io.github.lukeda.herdr",
+        "License": "MIT",
+        "Name": "Herdr Agents",
+        "Version": "0.1.0",
+        "Website": "https://github.com/lukeda/herdr-kde"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}
