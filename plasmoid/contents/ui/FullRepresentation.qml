@@ -54,6 +54,16 @@ PlasmaExtras.Representation {
             }
 
             PlasmaComponents.ToolButton {
+                readonly property bool recent: Plasmoid.configuration.sortOrder === "recent"
+                text: recent ? i18n("recent") : i18n("herdr order")
+                checkable: true
+                checked: recent
+                onToggled: Plasmoid.configuration.sortOrder = checked ? "recent" : "herdr"
+                PlasmaComponents.ToolTip.text: recent ? i18n("Latest status change first") : i18n("Same order as herdr's sidebar")
+                PlasmaComponents.ToolTip.visible: hovered
+            }
+
+            PlasmaComponents.ToolButton {
                 icon.name: "view-refresh"
                 display: PlasmaComponents.AbstractButton.IconOnly
                 text: i18n("Refresh")

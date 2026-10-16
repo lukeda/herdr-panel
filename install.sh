@@ -20,7 +20,7 @@ fi
 if kpackagetool6 --type Plasma/Applet --show "$widget_id" >/dev/null 2>&1; then
     kpackagetool6 --type Plasma/Applet --upgrade plasmoid
     echo "herdr-kde: widget upgraded. If it is already on a panel, restart Plasma to load the new version:"
-    echo "  systemctl --user restart plasma-plasmashell"
+    echo "  kquitapp6 plasmashell && systemctl --user start plasma-plasmashell"
 else
     kpackagetool6 --type Plasma/Applet --install plasmoid
     echo "herdr-kde: widget installed. Right-click your panel → Add Widgets… → \"Herdr Agents\"."

@@ -168,6 +168,30 @@ PlasmoidItem {
         return { agents: agents, workspaces: workspaces };
     }
 
+    // pane key -> last seen state_change_seq / when we saw it change. Seqs are
+    // per server, so wall-clock time is what lets sessions and machines interleave.
+    property var seenSeq: ({})
+    property var changedAt: ({})
+    readonly property double startedAt: Date.now()
+
+    function noteChange(key, seq) {
+        if (seenSeq[key] !== seq) {
+            changedAt[key] = seenSeq[key] === undefined ? startedAt : Date.now();
+            seenSeq[key] = seq;
+        }
+        return changedAt[key];
+    }
+
+    function sortByRecent(rows) {
+        const newer = (x, y) => y.changedAt - x.changedAt || y.changeSeq - x.changeSeq;
+        const sorted = rows.slice().sort(newer);
+        if (!Plasmoid.configuration.groupByWorkspace) return sorted;
+        // Sections must stay contiguous: order groups by their newest agent.
+        const groupRank = {};
+        sorted.forEach((r, i) => { if (!(r.group in groupRank)) groupRank[r.group] = i; });
+        return sorted.sort((x, y) => groupRank[x.group] - groupRank[y.group] || newer(x, y));
+    }
+
     function rebuild() {
         const rows = [];
         const errors = [];
@@ -181,6 +205,7 @@ PlasmoidItem {
             }
             const ws = {};
             for (const w of res.workspaces) ws[w.workspace_id] = w;
+            // Keep herdr's own order: agent list already matches its sidebar.
             const srcRows = res.agents.map(a => {
                 const w = ws[a.workspace_id] || {};
                 const status = a.agent_status || "unknown";
@@ -196,15 +221,16 @@ PlasmoidItem {
                     cwd: a.foreground_cwd || a.cwd || "",
                     focused: !!a.focused,
                     paneId: a.pane_id,
+                    changedAt: noteChange(src.key + "/" + a.pane_id, a.state_change_seq || 0),
+                    changeSeq: a.state_change_seq || 0,
                 };
             });
-            srcRows.sort((x, y) => x.workspaceNumber - y.workspaceNumber || x.paneId.localeCompare(y.paneId));
             for (const r of srcRows) {
                 r.group = r.source + " · " + r.workspace;
                 rows.push(r);
             }
         }
-        agentRows = rows;
+        agentRows = Plasmoid.configuration.sortOrder === "recent" ? sortByRecent(rows) : rows;
         sourceErrors = errors;
         counts = c;
     }
@@ -254,6 +280,8 @@ PlasmoidItem {
         target: Plasmoid.configuration
         function onShowRemoteChanged() { root.refreshSources(); }
         function onHerdrPathChanged() { root.refreshSources(); }
+        function onSortOrderChanged() { root.rebuild(); }
+        function onGroupByWorkspaceChanged() { root.rebuild(); }
     }
 
     Component.onCompleted: refreshSources()

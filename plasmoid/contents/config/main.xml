@@ -24,6 +24,10 @@
       <label>Group the agent list by workspace</label>
       <default>false</default>
     </entry>
+    <entry name="sortOrder" type="String">
+      <label>Agent order: "herdr" (sidebar order) or "recent" (latest status change first)</label>
+      <default>herdr</default>
+    </entry>
     <entry name="showCountsInPanel" type="Bool">
       <label>Show active/total agent counts next to the panel icon</label>
       <default>true</default>
