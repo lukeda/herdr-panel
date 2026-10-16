@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>herdr-kde launch animation</title>
+<title>herdr-panel launch animation</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;800&family=JetBrains+Mono:wght@400;600&display=block" rel="stylesheet">
 <style>
@@ -142,7 +142,7 @@
 </style>
 </head>
 <body>
-  <div id="brand" class="abs">herdr-kde</div>
+  <div id="brand" class="abs">herdr-panel</div>
   <div id="version" class="abs mono">v0.1.0</div>
 
   <div id="intro" class="abs headline"><div>Your agents,<br><span class="accent">in your panel.</span></div></div>
@@ -192,10 +192,10 @@
   </div>
 
   <div id="end" class="abs">
-    <div class="kicker mono">HERDR AGENTS FOR KDE PLASMA</div>
-    <div class="big headline">herdr-<br><span class="accent">kde.</span></div>
+    <div class="kicker mono">HERDR AGENTS IN YOUR PANEL</div>
+    <div class="big headline">herdr-<br><span class="accent">panel.</span></div>
     <div class="cmd mono"><span class="p">$</span> <span id="typed"></span><span id="caret"></span></div>
-    <div class="facts mono">free · MIT · Plasma 6 · local + SSH machines</div>
+    <div class="facts mono">free · MIT · KDE Plasma 6 · local + SSH machines</div>
   </div>
 
 <script>
@@ -340,7 +340,7 @@
     const end = prog(t, S.end[0], S.end[0] + 0.5);
     $("end").style.opacity = end;
     $("end").style.transform = `translateY(${(1 - end) * 20}px)`;
-    const cmd = "herdr plugin install lukeda/herdr-kde";
+    const cmd = "herdr plugin install lukeda/herdr-panel";
     const chars = Math.floor(clamp((t - S.end[0] - 0.7) / 1.6) * cmd.length);
     $("typed").textContent = cmd.slice(0, chars);
     $("caret").style.opacity = Math.floor(t * 2.2) % 2 === 0 || chars < cmd.length ? 1 : 0;

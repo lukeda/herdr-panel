@@ -1,25 +1,25 @@
-id = "herdr-kde"
-name = "KDE Plasma Agents Widget"
+id = "herdr-panel"
+name = "Herdr Panel"
 version = "0.1.0"
 min_herdr_version = "0.9.0"
-description = "KDE Plasma 6 panel widget that shows your herdr agents and their status"
+description = "Your herdr agents and their status in your desktop panel (KDE Plasma 6 for now)"
 platforms = ["linux"]
 
-# `herdr plugin install lukeda/herdr-kde` runs this, which installs (or
-# upgrades) the Plasma widget. Add it to a panel via "Add Widgets…".
+# `herdr plugin install lukeda/herdr-panel` runs this. install.sh detects which
+# desktop panels are available and installs the matching widget.
 [[build]]
 command = ["sh", "install.sh"]
 
 # For locally linked checkouts (build only runs on GitHub installs) and for
 # reinstalling after a manual uninstall.
 [[actions]]
-id = "install-widget"
-title = "Install/update KDE widget"
+id = "install"
+title = "Install/update panel widgets"
 contexts = ["global"]
 command = ["sh", "install.sh"]
 
 [[actions]]
-id = "uninstall-widget"
-title = "Uninstall KDE widget"
+id = "uninstall"
+title = "Uninstall panel widgets"
 contexts = ["global"]
 command = ["sh", "install.sh", "--uninstall"]

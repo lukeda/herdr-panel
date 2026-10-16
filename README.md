@@ -1,20 +1,20 @@
-<p align="center"><img src="https://img.shields.io/badge/herdr--kde-Herdr%20agents%20in%20your%20Plasma%20panel-3daee9?style=flat-square&labelColor=24292f" alt="herdr-kde | Herdr agents in your Plasma panel" /></p>
+<p align="center"><img src="https://img.shields.io/badge/herdr--panel-Herdr%20agents%20in%20your%20panel-3daee9?style=flat-square&labelColor=24292f" alt="herdr-panel | Herdr agents in your panel" /></p>
 
 <h3 align="center">See which of your coding agents are working, finished or waiting on you, without switching to the terminal</h3>
 
-<p align="center">herdr-kde puts <a href="https://herdr.dev">Herdr</a>'s agents sidebar in your KDE Plasma panel. A dot on the panel icon shows the most urgent state across every agent you run. Click it for the full list: every agent in every local session and on every SSH machine, live.</p>
+<p align="center">herdr-panel puts <a href="https://herdr.dev">Herdr</a>'s agents sidebar in your desktop panel, starting with KDE Plasma. A dot on the panel icon shows the most urgent state across every agent you run. Click it for the full list: every agent in every local session and on every SSH machine, live.</p>
 
-<p align="center"><img src="assets/herdr-kde.webp" width="88%" alt="Animation: the panel icon's dot turns red when an agent is blocked, the popup lists every agent with its workspace, title and status, and grouping shows agents per session and machine" /></p>
+<p align="center"><img src="assets/herdr-panel.webp" width="88%" alt="Animation: the panel icon's dot turns red when an agent is blocked, the popup lists every agent with its workspace, title and status, and grouping shows agents per session and machine" /></p>
 
-<p align="center"><a href="#install-in-two-steps"><img src="assets/buttons/install.svg" alt="Install herdr-kde" /></a></p>
+<p align="center"><a href="#install-in-two-steps"><img src="assets/buttons/install.svg" alt="Install herdr-panel" /></a></p>
 
-<p align="center"><sub>✓&nbsp;Free,&nbsp;MIT&nbsp;licensed &nbsp; ✓&nbsp;No&nbsp;dependencies&nbsp;beyond&nbsp;herdr&nbsp;and&nbsp;Plasma &nbsp; ✓&nbsp;KDE&nbsp;Plasma&nbsp;6,&nbsp;Herdr&nbsp;0.9+</sub></p>
+<p align="center"><sub>✓&nbsp;Free,&nbsp;MIT&nbsp;licensed &nbsp; ✓&nbsp;No&nbsp;dependencies&nbsp;beyond&nbsp;herdr&nbsp;and&nbsp;Plasma &nbsp; ✓&nbsp;KDE&nbsp;Plasma&nbsp;6&nbsp;today,&nbsp;more&nbsp;desktops&nbsp;coming</sub></p>
 
 <br />
 
 ## Keep an eye on your agents from anywhere on your desktop
 
-Herdr's sidebar tells you what every agent is doing, but only while you're looking at Herdr. herdr-kde shows the same thing in your panel, so you notice an agent that needs you while you're in your browser, editor or a meeting.
+Herdr's sidebar tells you what every agent is doing, but only while you're looking at Herdr. herdr-panel shows the same thing in your panel, so you notice an agent that needs you while you're in your browser, editor or a meeting.
 
 ### 🟠 One dot for everything
 
@@ -26,13 +26,23 @@ Click the icon for every agent, laid out like Herdr's own sidebar: `Local · wor
 
 ### 🛰️ Every session, every machine
 
-herdr-kde reads every running local Herdr session and every enabled machine in `herdr machine list`. Local agents refresh every 2 seconds and machines every 20. A machine that can't be reached doesn't hold anything up. A quiet `1 machine couldn't connect` line appears at the bottom, and clicking it shows the reason.
+herdr-panel reads every running local Herdr session and every enabled machine in `herdr machine list`. Local agents refresh every 2 seconds and machines every 20. A machine that can't be reached doesn't hold anything up. A quiet `1 machine couldn't connect` line appears at the bottom, and clicking it shows the reason.
+
+## Works with your desktop
+
+| Desktop / bar | Status |
+|---|---|
+| **KDE Plasma 6** | ✅ Panel widget |
+| **Waybar** (Hyprland, Sway, niri…) | 🛠️ Planned |
+| **GNOME Shell** | 💭 Ideas welcome |
+
+Every frontend shares the same data script, [`core/herdr-snapshot.sh`](core/herdr-snapshot.sh), and the installer sets up whichever ones your system has.
 
 ## Install in two steps
 
 <table>
 <tr>
-<td align="center" valign="top" width="50%"><h3>1️⃣</h3><b>Install the plugin</b><br /><sub>Run <code>herdr plugin install lukeda/herdr-kde</code>. Its build step installs the Plasma widget for your user with <code>kpackagetool6</code>.</sub></td>
+<td align="center" valign="top" width="50%"><h3>1️⃣</h3><b>Install the plugin</b><br /><sub>Run <code>herdr plugin install lukeda/herdr-panel</code>. Its build step finds your desktop and installs the matching widget for your user.</sub></td>
 <td align="center" valign="top" width="50%"><h3>2️⃣</h3><b>Add it to a panel</b><br /><sub>Right-click your panel → <b>Add Widgets…</b> → search for <b>Herdr Agents</b> and drag it onto the panel.</sub></td>
 </tr>
 </table>
@@ -40,7 +50,7 @@ herdr-kde reads every running local Herdr session and every enabled machine in `
 ## Updating
 
 ```bash
-herdr plugin update herdr-kde
+herdr plugin update herdr-panel
 ```
 
 Plasma keeps the loaded version of a widget in memory, so if it's already on a panel, restart Plasma to pick up the new one:
@@ -53,20 +63,20 @@ kquitapp6 plasmashell && systemctl --user start plasma-plasmashell
 
 ### What do I need?
 
-KDE Plasma 6 and Herdr 0.9 or newer. The widget finds `herdr` on your `PATH`, in `~/.local/bin` or in `~/.cargo/bin`. If yours is somewhere else, set its path in the widget's settings. Nothing else: no Python, no Node, no extra daemon.
+Herdr 0.9 or newer and a supported desktop: today that's KDE Plasma 6. The widget finds `herdr` on your `PATH`, in `~/.local/bin` or in `~/.cargo/bin`. If yours is somewhere else, set its path in the widget's settings. Nothing else: no Python, no Node, no extra daemon.
 
 ### Can I install it without Herdr's plugin manager?
 
 Yes:
 
 ```bash
-git clone https://github.com/lukeda/herdr-kde
-sh herdr-kde/install.sh
+git clone https://github.com/lukeda/herdr-panel
+sh herdr-panel/install.sh
 ```
 
 ### How does it get the agents?
 
-The widget runs [`herdr-snapshot.sh`](plasmoid/contents/code/herdr-snapshot.sh), which calls the Herdr CLI:
+The widget runs [`herdr-snapshot.sh`](core/herdr-snapshot.sh), which calls the Herdr CLI:
 
 | What | Command | Default interval |
 |---|---|---|
@@ -88,14 +98,20 @@ No. It only runs the `herdr` CLI on your machine. Remote machines are reached th
 ### How do I remove it?
 
 ```bash
-herdr plugin action invoke herdr-kde.uninstall-widget
-herdr plugin uninstall herdr-kde
+herdr plugin action invoke herdr-panel.uninstall
+herdr plugin uninstall herdr-panel
 ```
 
 ## Development
 
+```
+core/herdr-snapshot.sh   shared: calls the herdr CLI, prints JSON
+kde/                     KDE Plasma 6 widget (QML); install.sh copies core/ into it
+install.sh               detects desktops and installs each frontend
+```
+
 ```bash
-sh install.sh                          # install or upgrade the widget from this checkout
+sh install.sh                          # install or upgrade from this checkout
 plasmawindowed io.github.lukeda.herdr  # run it in a window instead of a panel
 herdr plugin link "$PWD"               # register the Herdr plugin from this checkout
 ```

@@ -13,7 +13,7 @@
         "License": "MIT",
         "Name": "Herdr Agents",
         "Version": "0.1.0",
-        "Website": "https://github.com/lukeda/herdr-kde"
+        "Website": "https://github.com/lukeda/herdr-panel"
     },
     "X-Plasma-API-Minimum-Version": "6.0"
 }

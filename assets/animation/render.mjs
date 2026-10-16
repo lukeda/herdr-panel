@@ -1,5 +1,5 @@
 // Steps index.html's renderAt(t) frame by frame in headless Chromium, then
-// encodes the README animation (assets/herdr-kde.webp) with ffmpeg.
+// encodes the README animation (assets/herdr-panel.webp) with ffmpeg.
 //
 //   npm install && npm run render
 //
@@ -23,7 +23,7 @@ await page.evaluate(() => document.fonts.ready);
 
 const duration = await page.evaluate(() => window.DURATION);
 const frames = Math.round(duration * fps);
-const dir = mkdtempSync(join(tmpdir(), "herdr-kde-frames-"));
+const dir = mkdtempSync(join(tmpdir(), "herdr-panel-frames-"));
 
 for (let i = 0; i < frames; i++) {
     await page.evaluate(t => window.renderAt(t), i / fps);
@@ -34,7 +34,7 @@ await browser.close();
 
 const input = ["-y", "-loglevel", "error", "-framerate", String(fps), "-i", join(dir, "f%04d.png")];
 execFileSync("ffmpeg", [...input, "-vf", "fps=15", "-c:v", "libwebp_anim", "-lossless", "0", "-quality", "80",
-    "-compression_level", "6", "-loop", "0", join(assets, "herdr-kde.webp")], { stdio: "inherit" });
+    "-compression_level", "6", "-loop", "0", join(assets, "herdr-panel.webp")], { stdio: "inherit" });
 
 rmSync(dir, { recursive: true, force: true });
-console.log("wrote assets/herdr-kde.webp");
+console.log("wrote assets/herdr-panel.webp");

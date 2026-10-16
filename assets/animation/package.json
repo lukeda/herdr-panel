@@ -1,8 +1,8 @@
 {
-  "name": "herdr-kde-animation",
+  "name": "herdr-panel-animation",
   "private": true,
   "type": "module",
-  "description": "Renders assets/herdr-kde.webp from index.html",
+  "description": "Renders assets/herdr-panel.webp from index.html",
   "scripts": {
     "render": "node render.mjs"
   },
