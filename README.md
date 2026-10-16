@@ -8,7 +8,7 @@
 
 <p align="center"><a href="#install-in-two-steps"><img src="assets/buttons/install.svg" alt="Install herdr-panel" /></a></p>
 
-<p align="center"><sub>✓&nbsp;Free,&nbsp;MIT&nbsp;licensed &nbsp; ✓&nbsp;No&nbsp;dependencies&nbsp;beyond&nbsp;herdr&nbsp;and&nbsp;Plasma &nbsp; ✓&nbsp;KDE&nbsp;Plasma&nbsp;6&nbsp;today,&nbsp;more&nbsp;desktops&nbsp;coming</sub></p>
+<p align="center"><sub>✓&nbsp;Free,&nbsp;MIT&nbsp;licensed &nbsp; ✓&nbsp;No&nbsp;dependencies&nbsp;beyond&nbsp;herdr&nbsp;and&nbsp;Plasma &nbsp; ✓&nbsp;KDE&nbsp;Plasma&nbsp;6&nbsp;today,&nbsp;Herdr&nbsp;0.9.1+</sub></p>
 
 <br />
 
@@ -50,7 +50,7 @@ Every frontend shares the same data script, [`core/herdr-snapshot.sh`](core/herd
 ## Updating
 
 ```bash
-herdr plugin update herdr-panel
+herdr plugin update herdr-panel   # herdr 0.9.4+; older: uninstall, then install again
 ```
 
 Plasma keeps the loaded version of a widget in memory, so if it's already on a panel, restart Plasma to pick up the new one:
@@ -63,7 +63,7 @@ kquitapp6 plasmashell && systemctl --user start plasma-plasmashell
 
 ### What do I need?
 
-Herdr 0.9 or newer and a supported desktop: today that's KDE Plasma 6. The widget finds `herdr` on your `PATH`, in `~/.local/bin` or in `~/.cargo/bin`. If yours is somewhere else, set its path in the widget's settings. Nothing else: no Python, no Node, no extra daemon.
+Herdr 0.9.1 or newer and a supported desktop: today that's KDE Plasma 6. The widget finds `herdr` on your `PATH`, in `~/.local/bin` or in `~/.cargo/bin`. If yours is somewhere else, set its path in the widget's settings. Nothing else: no Python, no Node, no extra daemon.
 
 ### Can I install it without Herdr's plugin manager?
 

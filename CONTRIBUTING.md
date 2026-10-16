@@ -23,7 +23,7 @@ The rule of thumb: **anything that talks to herdr goes in `core/`; anything that
 
 ## Development setup
 
-You need herdr 0.9+ and, for the KDE widget, Plasma 6.
+You need herdr 0.9.1+ and, for the KDE widget, Plasma 6.
 
 ```bash
 git clone https://github.com/lukeda/herdr-panel

@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Problem with herdr itself
+    url: https://github.com/herdrdev/herdr/issues
+    about: Bugs in the herdr TUI, agents or machines belong in the herdr repo.

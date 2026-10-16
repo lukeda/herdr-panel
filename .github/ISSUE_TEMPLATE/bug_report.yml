@@ -1,0 +1,76 @@
+name: Bug report
+description: Something in herdr-panel isn't working
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! If the problem is in herdr itself (the TUI, agents, machines), please report it to [herdr](https://github.com/herdrdev/herdr/issues) instead.
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you see, and what did you expect instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Add the widget to a panel
+        2. Click an agent
+        3. ...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: desktop
+    attributes:
+      label: Desktop
+      options:
+        - KDE Plasma 6 (Wayland)
+        - KDE Plasma 6 (X11)
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: Plasma version (`plasmashell --version`) and herdr version (`herdr --version`)
+      placeholder: plasmashell 6.7.4, herdr 0.9.5
+    validations:
+      required: true
+
+  - type: input
+    id: terminal
+    attributes:
+      label: Terminal
+      description: Only needed for click-to-focus problems
+      placeholder: Konsole, Yakuake, kitty, ...
+
+  - type: textarea
+    id: snapshot
+    attributes:
+      label: Data script output
+      description: |
+        What the widget sees. Run this and paste the output (remove anything private, like project names):
+        `sh ~/.local/share/plasma/plasmoids/io.github.lukeda.herdr/contents/code/herdr-snapshot.sh sources`
+      render: json
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Any widget errors from `journalctl --user -u plasma-plasmashell --since "-10min" | grep -i herdr`
+      render: text
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: Drag images here if it's a visual problem.
