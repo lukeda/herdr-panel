@@ -1,5 +1,5 @@
 // Steps index.html's renderAt(t) frame by frame in headless Chromium, then
-// encodes the README animation (webp) and the full-quality video (mp4) with ffmpeg.
+// encodes the README animation (assets/herdr-kde.webp) with ffmpeg.
 //
 //   npm install && npm run render
 //
@@ -33,10 +33,8 @@ for (let i = 0; i < frames; i++) {
 await browser.close();
 
 const input = ["-y", "-loglevel", "error", "-framerate", String(fps), "-i", join(dir, "f%04d.png")];
-execFileSync("ffmpeg", [...input, "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18", "-movflags", "+faststart",
-    join(assets, "herdr-kde.mp4")], { stdio: "inherit" });
 execFileSync("ffmpeg", [...input, "-vf", "fps=15", "-c:v", "libwebp_anim", "-lossless", "0", "-quality", "80",
     "-compression_level", "6", "-loop", "0", join(assets, "herdr-kde.webp")], { stdio: "inherit" });
 
 rmSync(dir, { recursive: true, force: true });
-console.log("wrote assets/herdr-kde.mp4 and assets/herdr-kde.webp");
+console.log("wrote assets/herdr-kde.webp");

@@ -4,7 +4,7 @@
 
 <p align="center">herdr-kde puts <a href="https://herdr.dev">Herdr</a>'s agents sidebar in your KDE Plasma panel. A dot on the panel icon shows the most urgent state across every agent you run. Click it for the full list: every agent in every local session and on every SSH machine, live.</p>
 
-<p align="center"><a href="https://github.com/lukeda/herdr-kde/blob/main/assets/herdr-kde.mp4"><img src="assets/herdr-kde.webp" width="88%" alt="Animation: the panel icon's dot turns red when an agent is blocked, the popup lists every agent with its workspace, title and status, and grouping shows agents per session and machine" /></a></p>
+<p align="center"><img src="assets/herdr-kde.webp" width="88%" alt="Animation: the panel icon's dot turns red when an agent is blocked, the popup lists every agent with its workspace, title and status, and grouping shows agents per session and machine" /></p>
 
 <p align="center"><a href="#install-in-two-steps"><img src="assets/buttons/install.svg" alt="Install herdr-kde" /></a></p>
 
