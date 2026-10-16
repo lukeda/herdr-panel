@@ -55,7 +55,7 @@ PlasmaExtras.Representation {
 
             PlasmaComponents.ToolButton {
                 readonly property bool recent: Plasmoid.configuration.sortOrder === "recent"
-                text: recent ? i18n("recent") : i18n("herdr order")
+                text: recent ? i18n("recent") : i18n("default")
                 checkable: true
                 checked: recent
                 onToggled: Plasmoid.configuration.sortOrder = checked ? "recent" : "herdr"

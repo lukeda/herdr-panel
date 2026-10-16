@@ -22,7 +22,7 @@ The panel icon carries a single dot for the most urgent state across all your ag
 
 ### 📋 The sidebar, one click away
 
-Click the icon for every agent, laid out like Herdr's own sidebar: `Local · workspace · title`, with the agent and its status underneath. Toggle **grouped** to sort them under their session and workspace, and **herdr order** / **recent** to keep the sidebar's order or put the latest status change first. The agent focused in Herdr is highlighted, and hovering a row shows its folder.
+Click the icon for every agent, laid out like Herdr's own sidebar: `Local · workspace · title`, with the agent and its status underneath. Toggle **grouped** to sort them under their session and workspace, and **default** / **recent** to keep herdr's sidebar order or put the latest status change first. The agent focused in Herdr is highlighted, and hovering a row shows its folder.
 
 ### 🛰️ Every session, every machine
 
